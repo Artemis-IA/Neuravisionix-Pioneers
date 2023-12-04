@@ -44,3 +44,11 @@ Ce projet vise à développer un outil complet de gestion d'annotations et de mo
 1. Cloner le dépôt :
    ```bash
    git clone https://github.com/Artemis-IA/Neuravisionix-Pioneers.git
+
+   cd Neuravisionix-Pioneers
+   ```
+2. Installer les dépendances :
+   ```bash
+
+   pip install -r requirements.txt
+   ```

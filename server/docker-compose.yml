@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  dockerflaskserveur:
+      build:
+        context: .
+        dockerfile: Dockerfile-api
+      container_name: flask-api
+      ports: 
+        - 5001:5000
+      entrypoint:
+        - flask
+        - run
+        - --host=0.0.0.0
+        - --port=5000
+      environment: 
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=example
+        - MYSQL_ROOT_PASSWORD=example
+        - MYSQL_DATABASE=web_page
+        - FLASK_DEBUG=1
+        - FLASK_APP=./api.py
+      volumes:
+        ['./:/app']
+    
+
+  bdd-mariadb:
+      image: mariadb
+      container_name: bdd-mariadb
+      ports:
+        - 3306:3306
+      networks:
+        - host
+      environment:
+        - MYSQL_ROOT_PASSWORD=example
+        - MYSQL_DATABASE=web_page
+  bdd-mongo:
+      image: mongo
+      container_name: bdd-mongo
+      ports:
+        - 27017:27017
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=example
+        - MONGO_INITDB_DATABASE=labels

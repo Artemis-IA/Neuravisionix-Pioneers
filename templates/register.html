@@ -1,9 +1,9 @@
 <head>
   <meta charset="UTF-8" />
-  <title>Intradys - Login</title>
+  <title>Intradys - Register</title>
   <link
     rel="stylesheet"
-    href="{{ url_for('static', filename='/css/login.css') }}"
+    href="{{ url_for('static', filename='/css/register.css') }}"
   />
 </head>
 
@@ -13,37 +13,42 @@
     <span class="error animated tada" id="msg"></span>
     <form name="form1" class="box" onsubmit="return checkStuff()">
       <h4>Intradys</h4>
-      <h5>Sign in to your account.</h5>
+      <h5>Register a new account</h5>
       <input
         class="dnone"
         type="text"
         name="email"
         placeholder="Email"
         autocomplete="off"
+        required
       />
       <input
         type="text"
         name="username"
         placeholder="Username"
         autocomplete="off"
+        required
       />
       <input
         type="password"
         name="password"
-        placeholder="Passsword"
+        placeholder="Password"
         id="pwd"
         autocomplete="off"
+        required
       />
-      <label>
-        <input type="checkbox" />
-        <span></span>
-        <small class="rmb">Remember me</small>
-      </label>
-      <a href="#" class="forgetpass">Forgot Password</a>
-      <input type="submit" value="Sign in" class="btn1" />
+      <input
+        type="password"
+        name="passwordConfirm"
+        placeholder="Confirm Password"
+        id="pwd"
+        autocomplete="off"
+        required
+      />
+      <input type="submit" value="Register" class="btn1" />
     </form>
-    <a href="{{ url_for('register') }}" class="register"
-      >No account ? Register here</a
+    <a href="{{ url_for('login') }}" class="register"
+      >Already have an account ? Login here</a
     >
   </div>
 </div>

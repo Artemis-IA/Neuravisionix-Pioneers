@@ -142,6 +142,7 @@ a.link:hover .icon_menu {
   display: flex;
   justify-content: flex-end;
   color: white;
+  font-family: "Inter", sans-serif;
 }
 
 .container {

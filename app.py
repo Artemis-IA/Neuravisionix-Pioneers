@@ -1,9 +1,9 @@
 import os
-import cv2
 import json
 from ultralytics import YOLO
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -22,8 +22,11 @@ class PredictorLabeller:
             filename = image_path.split("/")[-1]
             file_size = os.path.getsize(image_path)
             unique_key = f"{filename}{file_size}"
-            image = cv2.imread(image_path)
-            height, width, channels = image.shape
+            
+            # Open the image using Pillow
+            with Image.open(image_path) as img:
+                # Get image dimensions
+                width, height = img.size
 
             size = width * height
             regions = []
@@ -85,11 +88,11 @@ class PredictorLabeller:
         return images
 
     def save_annotations_to_file(self, annotations, output_directory):
-        # Créer le répertoire s'il n'existe pas
+        # Create the directory if it doesn't exist
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-        # Enregistrer le fichier JSON dans le répertoire
+        # Save the JSON file in the directory
         output_path = os.path.join(output_directory, 'annotations.json')
         with open(output_path, 'w') as json_file:
             json_file.write(annotations)

@@ -46,26 +46,13 @@
           <th>Date</th>
         </tr>
       </thead>
-      <tbody>
-        {% for label in labeling_data %}
-        <tr>
-          <td>{{ label['user_id'] }}</td>
-          <td>{{ label['image_name'] }}</td>
-          <td>{{ label['action'] }}</td>
-          <td>{{ label['date'].strftime('%d/%m/%Y %Hh%M') }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
+      <tbody></tbody>
 
       <tbody></tbody>
     </table>
 
     <!-- Liens de pagination -->
-    <div class="pagination">
-      {% for p in range(1, total_pages + 1) %}
-      <a href="{{ url_for('logs', page=p) }}" class="page_number">{{ p }}</a>
-      {% endfor %}
-    </div>
+    <div class="pagination"></div>
     <div class="tb_search">
       <input
         type="text"

@@ -6,12 +6,13 @@
     <title>Dashboard</title>
   </head>
   <body>
-    {% extends 'container.html' %} {% block content %}{% include 'menu.html' %}
+    {% extends 'container.html' %} {% block content %}{% include 'menu.html'%}
     <div class="content">
       <img
         src="{{ url_for('static', filename='/img/bg_intradys.jpg') }}"
         style="width: 100%"
       />
+      <p>{{token}}</p>
     </div>
     {% endblock %}
   </body>

@@ -7,7 +7,12 @@
   </head>
   <body>
     {% extends 'container.html' %} {% block content %}{% include 'menu.html' %}
-    <div class="content"></div>
+    <div class="content">
+      <img
+        src="{{ url_for('static', filename='/img/bg_intradys.jpg') }}"
+        style="width: 100%"
+      />
+    </div>
     {% endblock %}
   </body>
 </html>

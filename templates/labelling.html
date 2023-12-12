@@ -29,7 +29,7 @@
         ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
         POSSIBILITY OF SUCH DAMAGE.
       -->
-    <title>VGG Image Annotator</title>
+    <title>Intradys - Image Annotator</title>
     <meta name="author" content="Abhishek Dutta">
     <meta name="description" content="VIA is a standalone image annotator application packaged as a single HTML file (< 400 KB) that runs on most modern web browsers.">
 
@@ -68,7 +68,7 @@ a { text-decoration:none; }
 textarea { border:1px solid #cccccc; margin:0.6rem 0; padding:0.2rem 0.4rem; }
 
 /* Top panel : #navbar, #toolbar */
-.top_panel { font-size:0.9rem; display:block; background-color:#212121; color:#ffffff; z-index:1001; margin-bottom:1rem;}
+.top_panel {font-size:0.9rem;display:block;background-color: #0C1E35;color:#ffffff;z-index:1001;margin-bottom:1rem;}
 
 /* Navigation menu bar that appear at the top */
 .menubar { display:inline-block; height:1.8rem; } /* height needed to avoid extra bottom border */
@@ -76,9 +76,9 @@ textarea { border:1px solid #cccccc; margin:0.6rem 0; padding:0.2rem 0.4rem; }
 .menubar a:visited { color:#eeeeee; text-decoration:none; }
 .menubar ul { display:block; padding:0; margin:0; }
 .menubar li { display:inline; float:left; padding:0.45rem 1rem; }
-.menubar li:hover { background-color:#616161; cursor:default; }
+.menubar li:hover {background-color: #4ebded;cursor:default;}
 
-.menubar li ul { display:none; background-color:#212121; border:1px solid #616161; min-width:10rem; position:absolute; z-index:100; margin:0.4rem -1rem;}
+.menubar li ul {display:none;background-color: #0071A1;border:1px solid #616161;min-width:10rem;position:absolute;z-index:100;margin:0.4rem -1rem;}
 .menubar li ul li { display:block; float:none; color:#eeeeee; margin:0; padding:0.6rem 1rem; }
 .menubar li ul li:hover { cursor:pointer; }
 .menubar li ul li.submenu_divider { margin:0 0.4rem; padding:0; height:1px; border-bottom:1px solid #424242; }
@@ -424,7 +424,7 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
       <!-- menu bar -->
       <div class="menubar">
         <ul>
-          <a href="{{ url_for('dashboard') }}"><li style="cursor:pointer;">Dashboard</li></a>
+          <a href="/dashboard"><li style="cursor:pointer;">Dashboard</li></a>
           <li>Project
             <ul>
               <li onclick="project_open_select_project_file()" title="Load a VIA project (from a JSON file)">Load</li>

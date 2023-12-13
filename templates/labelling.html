@@ -11158,6 +11158,153 @@ function polygon_to_bbox(pts) {
   }
   return [xmin, ymin, xmax-xmin, ymax-ymin];
 }
+
+
+
+
+
+
+function import_json(jsonData) {
+  return new Promise(function (ok_callback, err_callback) {
+    if (!jsonData || typeof jsonData !== 'object') {
+      // Handle invalid JSON data
+      err_callback('Invalid JSON data');
+      return;
+    }
+
+    var region_import_count = 0;
+    var file_added_count = 0;
+    var malformed_entries_count = 0;
+
+    for (var img_id in jsonData) {
+      if (!_via_img_metadata.hasOwnProperty(img_id)) {
+        project_add_new_file(jsonData[img_id].filename, jsonData[img_id].size, img_id);
+        if (_via_settings.core.default_filepath === '') {
+          _via_img_src[img_id] = jsonData[img_id].filename;
+        } else {
+          _via_file_resolve_file_to_default_filepath(img_id);
+        }
+        file_added_count += 1;
+      }
+
+      // copy file attributes
+      for (var key in jsonData[img_id].file_attributes) {
+        if (key === '') {
+          continue;
+        }
+
+        _via_img_metadata[img_id].file_attributes[key] = jsonData[img_id].file_attributes[key];
+
+        // add this file attribute to _via_attributes
+        if (!_via_attributes['file'].hasOwnProperty(key)) {
+          _via_attributes['file'][key] = { 'type': 'text' };
+        }
+      }
+
+      // copy regions
+      var regions = jsonData[img_id].regions;
+      for (var i in regions) {
+        var region_i = new file_region();
+        for (var sid in regions[i].shape_attributes) {
+          region_i.shape_attributes[sid] = regions[i].shape_attributes[sid];
+        }
+        for (var rid in regions[i].region_attributes) {
+          if (rid === '') {
+            continue;
+          }
+
+          region_i.region_attributes[rid] = regions[i].region_attributes[rid];
+
+          // add this region attribute to _via_attributes
+          if (!_via_attributes['region'].hasOwnProperty(rid)) {
+            _via_attributes['region'][rid] = { 'type': 'text' };
+          }
+        }
+
+        // add regions only if they are present
+        if (Object.keys(region_i.shape_attributes).length > 0 ||
+          Object.keys(region_i.region_attributes).length > 0) {
+          _via_img_metadata[img_id].regions.push(region_i);
+          region_import_count += 1;
+        }
+      }
+    }
+
+    show_message('Import Summary : [' + file_added_count + '] new files, ' +
+      '[' + region_import_count + '] regions, ' +
+      '[' + malformed_entries_count + '] malformed entries.');
+
+    if (file_added_count) {
+      update_img_fn_list();
+    }
+
+    if (_via_current_image_loaded) {
+      if (region_import_count) {
+        update_attributes_update_panel();
+        annotation_editor_update_content();
+        _via_load_canvas_regions(); // image to canvas space transform
+        _via_redraw_reg_canvas();
+        _via_reg_canvas.focus();
+      }
+    } else {
+      if (file_added_count) {
+        _via_show_img(0);
+      }
+    }
+
+    ok_callback([file_added_count, region_import_count, malformed_entries_count]);
+  });
+}
+
+// Example usage with a JSON object
+var json = {
+    {% for image_name, image_info in data['images'].items() %}
+      "{{ url_for('get_image', filename=image_info['filename']) }}": {
+        "filename": "{{ url_for('get_image', filename=image_info['filename']) }}",
+        "size": {{ image_info['size'] }},
+        "regions": [
+          {% for region in image_info['regions'] %}
+            {
+              "shape_attributes": {
+                "name": "{{ region['shape_attributes']['name'] }}",
+                "x": {{ region['shape_attributes']['x'] }},
+                "y": {{ region['shape_attributes']['y'] }},
+                "width": {{ region['shape_attributes']['width'] }},
+                "height": {{ region['shape_attributes']['height'] }}
+              },
+              "region_attributes": {{ region['region_attributes'] | tojson }}
+            },
+          {% endfor %}
+        ],
+        "file_attributes": {{ image_info['file_attributes'] | tojson }}
+      },
+    {% endfor %}
+  };
+
+
+import_json(json)
+
+  .then(function (result) {
+    console.log('Import successful:', result);
+  })
+  .catch(function (error) {
+    console.error('Import failed:', error);
+  });
+
+  window.addEventListener('load', function() {
+    jump_to_image(0);
+});
+
+
+
+
+
+
+
+
+
+
+
 </script>
 <!-- END: Contents of file: via.js-->
   </body>

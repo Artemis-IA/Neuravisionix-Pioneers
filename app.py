@@ -2,24 +2,25 @@ from flask import session
 from flask import flash
 from functools import wraps
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+from flask import send_file
 import requests
 import os
-import cv2
+from PIL import Image
 import json
-from ultralytics import YOLO
+
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = '0ec5205f107e18f72f9fd8d363c04c98'
-SERVER_URL = "https://mlops.morgan-coulm.fr"
+SERVER_URL = "http://equipe2.lumys.tech:5005"
 
 
 class PredictorLabeller:
     def __init__(self):
         self.image_directory = "./images"
         self.device = "cpu"
-        self.model = YOLO('yolov8n.pt')
+
 
     def predict_single_image(self, image_path):
         results = self.model(image_path, save=True)
@@ -30,7 +31,7 @@ class PredictorLabeller:
             filename = image_path.split("/")[-1]
             file_size = os.path.getsize(image_path)
             unique_key = f"{filename}{file_size}"
-            image = cv2.imread(image_path)
+            image =[]
             height, width, channels = image.shape
 
             size = width * height
@@ -192,10 +193,38 @@ def dashboard():
 
 
 @app.route('/labelling')
-@check_authentication
 def labelling():
-    labeled_images = []
-    return render_template('labelling.html', labeled_images=labeled_images)
+    id_image=  '65772409edfb11a6c6d8fac9' #image en dur 
+    info_image= requests.get(f'{SERVER_URL}/affiche_image/{id_image}')
+    data_image = info_image.json()
+    filepath = data_image['result']['path']
+    print('prems : ',filepath)
+    filepath = {"filepath": filepath}
+    response_annotation = requests.post(f'http://equipe2.lumys.tech:5005/load_images', json=filepath)
+    data = response_annotation.json()
+    filename = [image_info['filename'] for image_info in data['images'].values()]
+    filename = filename[0]
+    print(f"Image:{filename}")
+    
+    response_image = requests.post(f'{SERVER_URL}/image_from_server', json=filepath)
+
+    with open(f"./image/{filename}", 'wb') as f:
+        f.write(response_image.content)
+    image=filename
+    return render_template('labelling.html',image=image ,filename=filename ,data=data)
+
+@app.route('/get_image/<filename>')
+def get_image(filename):
+    image_path = f'./image/{filename}'
+    with Image.open(image_path) as img:
+        # Récupérer le format de l'image (par exemple, 'JPEG', 'PNG', etc.)
+        image_format = img.format.lower()
+        print('image sans app pls',image_path)
+        # Envoyer le fichier avec le bon type MIME
+        return send_file(image_path, mimetype=f'image/{image_format}')
+
+    
+    #return send_file(image_path, mimetype='image/png')
 
 
 @app.route('/predict', methods=['POST'])
@@ -287,6 +316,10 @@ def logout():
     session.clear()
     # Redirect to the login page
     return redirect(url_for('login'))
+
+
+
+
 
 
 if __name__ == '__main__':

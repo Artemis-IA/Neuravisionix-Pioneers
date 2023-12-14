@@ -40,7 +40,7 @@ Allow users to change some settings on the app.
 
 Administrators can access: {URL}/admin/user_management. Here, they will find a list of all users and have the ability to change a user's role to admin, and an admin's role to user. They can also delete any user.
 
-**Note:** ADMIN SHOULD NOT BE REMOVED AS ONLY THEM CAN CREATE A USER (Or if the database is empty, the admin account admin/admin will be created).
+**Note:** <span style="color:red">ADMIN SHOULD NOT BE REMOVED AS ONLY THEM CAN CREATE A USER (Or if the database is empty, the admin account admin/admin will be created).</span>
 
 ### Databases
 

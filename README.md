@@ -47,8 +47,7 @@ Ce projet vise à développer un outil complet de gestion d'annotations et de mo
 
    cd Neuravisionix-Pioneers
    ```
-2. Installer les dépendances :
+2. intergré au docker-compose.yml le lien vers l'api a - SERVER_URL:
    ```bash
-
-   pip install -r requirements.txt
+   docker-compose up -d 
    ```

@@ -164,13 +164,8 @@ def login():
 @check_authentication
 def register():
     if request.method == 'POST':
-        # Remplacez 'user' et 'password' par les valeurs d'identification réelles de l'administrateur
-        admin_username = 'user'
-        admin_password = 'password'
-
         # Obtenez le jeton d'administration
-        admin_token = get_token(admin_username, admin_password)
-
+        admin_token = session.get('token')
         if admin_token:
             # Créez un nouvel utilisateur avec les données minimales
             username = request.form['username']
@@ -203,6 +198,7 @@ def register():
             return render_template('login.html')
 
     return render_template('register.html')
+
     
 
 @app.route('/dashboard')

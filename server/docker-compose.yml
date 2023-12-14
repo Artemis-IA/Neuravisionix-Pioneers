@@ -1,0 +1,68 @@
+version: '3'
+services:
+  
+  dockerflaskserveur:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask-api
+    ports:
+      - 5005:5000
+    entrypoint:
+      - flask
+      - run
+      - --host=0.0.0.0
+      - --port=5000
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_HOST=bdd_mongodb:27017
+      - MONGO_INITDB_DATABASE=bdd_label
+      - MYSQL_ROOT_PASSWORD=exemple
+      - MYSQL_DATABASE=bdd_user
+      - MYSQL_HOST=bdd_mariadb:3306
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - FLASK_DEBUG=1
+      - FLASK_APP=./app.py
+    volumes:
+      - './:/app'
+    depends_on:
+      - bdd_mariadb
+      - bdd_mongodb
+
+
+  bdd_mariadb:
+    image: mariadb
+    container_name: bdd_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: exemple
+      MYSQL_DATABASE: bdd_user
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  
+  bdd_mongodb:
+    image: mongo:latest
+    container_name: bdd_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: bdd_label
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    command: --auth 
+
+volumes:
+  mariadb_data:
+  mongodb_data:
+networks:
+  hostprojet:

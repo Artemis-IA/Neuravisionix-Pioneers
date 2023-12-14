@@ -32,10 +32,7 @@ th {
   width: 20%;
   float: left;
 }
-.tb_search {
-  width: 20%;
-  float: right;
-}
+
 .pagination-container {
   width: 70%;
   float: left;
@@ -76,16 +73,11 @@ table {
 
 @media (min-width: 768px) {
   .content {
-    width: 750px;
-  }
-  .content {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
+    width: 80% !important;
     margin-left: auto;
+    margin-right: auto;
   }
 }
-
 .form-control {
   display: block;
   width: 100%;

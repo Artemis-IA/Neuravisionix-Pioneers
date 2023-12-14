@@ -8,6 +8,7 @@ import requests
 app = Flask(__name__)
 app.secret_key = '0ec5205f107e18f72f9fd8d363c04c98'
 SERVER_URL = "http://equipe2.lumys.tech:5005"
+# SERVER_URL = "https://api.morgan-coulm.fr"
 
 
 def get_token(username, password):

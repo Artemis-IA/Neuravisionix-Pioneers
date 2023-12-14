@@ -455,7 +455,7 @@ img.img_logo {
   align-items: center;
   flex-direction: column;
   width: 100%;
-  z-index: -1;
+  justify-content: center;
 }
 
 .layout {

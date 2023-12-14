@@ -185,21 +185,44 @@ def labelling():
         
         data_image = info_image.json()
         filepath = data_image['result']['path']
+        print('ici',filepath)
         filepath = {"filepath": filepath}
-        response_annotation = requests.post(f'http://equipe2.lumys.tech:5005/load_images', json=filepath , headers=headers)
+        filename_2 = data_image['result']['name']
+        if 'label'=='False':
+            response_annotation = requests.post(f'http://equipe2.lumys.tech:5005/load_images', json=filepath , headers=headers)
+            data = response_annotation.json()
+        else:
+            data = data_image['result']['regions']
+            data = {'images' :{
+                    'Fsx8nFRWwAAfhAk.jpg42889': {
+                    'file_attributes': {},
+                    'filename': data_image['result']['name'],
+                    'regions': data ,
+                    'size': data_image['result']['size']
+
+                    }
+                }}
         
-        data = response_annotation.json()
+        print(data)
+        print(data)
+        print("filename ++",data['images'].values())
+
         filename = [image_info['filename']
                     for image_info in data['images'].values()]
+        filesize = [image_info['size']
+                    for image_info in data['images'].values()]
         filename = filename[0]
+        filesize = filesize[0]       
+        print(filesize)
         print(f"Image:{filename}")
-
+        print(f"Image:{filename_2}")
+        filename =filename_2
         response_image = requests.post(f'{SERVER_URL}/image_from_server', json=filepath , headers=headers)
 
         with open(f"./image/{filename}", 'wb') as f:
             f.write(response_image.content)
         image = filename
-        return render_template('labelling.html', image=image, filename=filename, data=data, id_image=id_image)
+        return render_template('labelling.html', image=image, filename=filename, data=data, id_image=id_image,filesize = filesize)
     else:
         print("Authentication failed")
         return jsonify({'message': 'Authentication failed'}), 401
@@ -216,11 +239,12 @@ def resultat():
         uploaded_file = request.files['file']
         file_content = uploaded_file.read().decode('utf-8')
         id_value = request.form['id']
+        size_value = request.form['size']
         # response = requests.post(f'{SERVER_URL}/post_resultat/{id_value}')
         file_content = json.loads(file_content)
         # print(list(file_content.keys())[0])
         data = {'id': id_value, 'regions': file_content[list(file_content.keys())[
-            0]]["regions"]}
+            0]]["regions"],'size': f'{size_value}'}
         print('uplod', data)
         response = requests.post(f'{SERVER_URL}/post_resultat', json=data , headers=headers)
         response_json = response.json()

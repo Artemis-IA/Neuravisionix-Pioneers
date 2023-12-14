@@ -11343,7 +11343,7 @@ function upload_all_region_data(type, file_extension) {
 
       // Ajoute de l'id de l'image 
       formData.append('id', '{{id_image}}');
-
+      formData.append('size', '{{filesize}}');
       // Effectue une requête POST vers l'adresse /resultat
       fetch('/resultat', {
         method: 'POST',

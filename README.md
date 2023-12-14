@@ -18,16 +18,12 @@ When successfully logging in, the users will be directed to the home page.
 ![Neuravisionix Homepage](https://github.com/Artemis-IA/Neuravisionix-Pioneers/blob/fred/docs/homepage.png)
 
 
-### Labelling
-
-The labelling button will direct you to the labelling app, an open-source project known as VGG Image Annotator (VIA). The documentation for VIA can be found in the 'Help' tab under 'Getting Started' and on the official VIA website. To save an image with its annotation(s), click the “save project” button (middle of the sidebar).
-![Neuravisionix VIA](https://github.com/Artemis-IA/Neuravisionix-Pioneers/blob/fred/docs/via.jpg)
-
-
 ### Overview
 
-Allow users to view annotation logs: If a user saves a new annotation, it will be recorded here, along with the image name and a boolean indicating whether the image has annotations or not. Clicking on the image will redirect the user to VIA, where they can annotate the image.
+Allow users to view annotation logs and allows users to annotate an image : If a user saves a new annotation, it will be recorded here, along with the image name and a boolean indicating whether the image has annotations or not. Clicking on the image will redirect the user to the the annotation app, an open-source project known as VGG Image Annotator (VIA), where they can annotate the image.
 
+The documentation for VIA can be found in the 'Help' tab under 'Getting Started' and on the official VIA website. To save an image with its annotation(s), click the “save project” button (middle of the sidebar).
+![Neuravisionix VIA](https://github.com/Artemis-IA/Neuravisionix-Pioneers/blob/fred/docs/via.jpg)
 ### Help
 
 Redirect users to a form to write their issue(s).

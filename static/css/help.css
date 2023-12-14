@@ -1,0 +1,80 @@
+input.btn_cancel {
+  padding: 5px 25px;
+  background: transparent;
+  cursor: pointer;
+  border: 2px solid #2d91bc;
+  border-radius: 3px;
+  color: #2d91bc;
+  font-family: "Inter";
+  font-weight: bold;
+  box-shadow: 0px 5px 6px -2px rgba(0, 0, 0, 0.2);
+  font-size: 20px;
+}
+input.btn_send {
+  padding: 5px 25px;
+  background: #2d91bc;
+  cursor: pointer;
+  border: 2px solid #2d91bc;
+  border-radius: 3px;
+  color: white;
+  font-family: "Inter";
+  font-weight: bold;
+  box-shadow: 0px 5px 6px -2px rgba(0, 0, 0, 0.2);
+  font-size: 20px;
+}
+textarea.form_div_textarea {
+  background-color: #f3f3f3;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  width: 600px;
+  height: 100px;
+  box-shadow: 0px 5px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  text-align: center;
+  font-family: "Inter";
+}
+
+form.box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form_div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: 75px;
+  font-size: 20px;
+}
+
+label.form_div_label {
+  font-family: "Inter";
+  padding-bottom: 10px;
+}
+
+select.form_div_select {
+  background-color: #f3f3f3;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  width: 600px;
+  height: 40px;
+  font-size: 20px;
+  padding: 5px;
+  cursor: pointer;
+  box-shadow: 0px 5px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+.form_div_select:focus,
+.form_div_textarea:focus {
+  outline: none !important;
+  border: 1px solid white;
+  box-shadow: 0px 5px 6px -2px #719ece8a;
+}
+
+.form_div_select,
+.form_div_textarea {
+  transition: 0.2s;
+}

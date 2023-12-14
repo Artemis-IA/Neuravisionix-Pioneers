@@ -1,6 +1,6 @@
 <head>
   <meta charset="UTF-8" />
-  <title>Intradys - Logs</title>
+  <title>Intradys - User Management</title>
   <link
     rel="stylesheet"
     href="{{ url_for('static', filename='/css/user_management.css') }}"
@@ -49,12 +49,36 @@
         {% for user in users['user'] %}
         <tr>
           <td>{{ user['username'] }}</td>
-          <td>{{ user['role'] }}</td>
+          <td id="test">{{ user['role'] }}</td>
           <td>
-            <a href="{{ url_for('switch_role', user_id=user['id']) }}"
-              ><i class="icon-pen" title="Switch user role"></i
-            ></a>
-            <i class="icon-trash" title="Delete user"></i>
+            <form
+              id="switchForm"
+              action="{{ url_for('switch_role', user_id=user['id']) }}"
+              method="post"
+            >
+              <button
+                type="submit"
+                id="completed-task"
+                style="background: none; padding: 0px; border: none"
+              >
+                <i class="icon-pen"></i>
+          </button>
+              </div>
+            </form>
+
+            <form
+              id="deleteForm"
+              action="{{ url_for('delete_user', user_id=user['id']) }}"
+              method="post"
+            >
+              <button
+                type="submit"
+                id="completed-task"
+                style="background: none; padding: 0px; border: none"
+              >
+                <i class="icon-trash"></i>
+              </button>
+            </form>
           </td>
         </tr>
         {% endfor %}
@@ -75,3 +99,23 @@
 
   {% endblock %}
 </div>
+
+<script type="text/javascript">
+  deleteForm = document.getElementById("deleteForm");
+  deleteIcon = document.getElementById("icon-trash");
+  switchForm = document.getElementById("switchForm");
+  switchIcon = document.getElementById("icon-pen");
+  test = document.getElementById("test");
+
+  test.addEventListener("click", function () {
+    console.log("test clicked");
+  });
+  deleteIcon.addEventListener("click", function () {
+    deleteForm.submit();
+  });
+
+  // Ajouter un gestionnaire d'événement au clic sur l'icône de modification de rôle
+  switchIcon.addEventListener("click", function () {
+    switchForm.submit();
+  });
+</script>

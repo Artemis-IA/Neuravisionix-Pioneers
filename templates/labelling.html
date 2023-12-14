@@ -29,7 +29,7 @@
         ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
         POSSIBILITY OF SUCH DAMAGE.
       -->
-    <title>Intradys - Image Annotator</title>
+    <title>VGG Image Annotator</title>
     <meta name="author" content="Abhishek Dutta">
     <meta name="description" content="VIA is a standalone image annotator application packaged as a single HTML file (< 400 KB) that runs on most modern web browsers.">
 
@@ -424,11 +424,11 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
       <!-- menu bar -->
       <div class="menubar">
         <ul>
-          <a href="/dashboard"><li style="cursor:pointer;">Dashboard</li></a>
+          <a href="{{ url_for('dashboard') }}"><li style="cursor:pointer;">Dashboard</li></a>
           <li>Project
             <ul>
               <li onclick="project_open_select_project_file()" title="Load a VIA project (from a JSON file)">Load</li>
-              <li onclick="project_save_with_confirm()" title="Save this VIA project (as a JSON file)">Save</li>
+              <li onclick="upload_all_region_data('json')" title="Save this VIA project (as a JSON file)">Save</li>
               <li onclick="settings_panel_toggle()" title="Show/edit project settings">Settings</li>
               <li class="submenu_divider"></li>
               <li onclick="sel_local_images()" title="Add images locally stored in this computer">Add local files</li>
@@ -491,7 +491,7 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
       <!-- Shortcut toolbar -->
       <div class="toolbar">
         <svg onclick="project_open_select_project_file()" viewbox="0 0 24 24"><use xlink:href="#icon_open"></use><title>Open Project</title></svg>
-        <svg onclick="project_save_with_confirm()" viewbox="0 0 24 24"><use xlink:href="#icon_save"></use><title>Save Project</title></svg>
+        <svg onclick="upload_all_region_data()" viewbox="0 0 24 24"><use xlink:href="#icon_save"></use><title>Save Project</title></svg>
         <svg onclick="settings_panel_toggle()" viewbox="0 0 24 24"><use xlink:href="#icon_settings"></use><title>Update Project Settings</title></svg>
         <!--
         <svg onclick="" viewbox="0 0 24 24"><use xlink:href="#icon_checkbox"></use><title>Locate Files</title></svg>
@@ -1545,7 +1545,7 @@ function download_all_region_data(type, file_extension) {
   pack_via_metadata(type).then( function(data) {
     var blob_attr = {type: 'text/'+file_extension+';charset=utf-8'};
     var all_region_data_blob = new Blob(data, blob_attr);
-
+    
     var filename = 'via_export';
     if(typeof(_via_settings) !== 'undefined' &&
        _via_settings.hasOwnProperty('project') &&
@@ -11158,6 +11158,223 @@ function polygon_to_bbox(pts) {
   }
   return [xmin, ymin, xmax-xmin, ymax-ymin];
 }
+
+
+
+
+
+
+function import_json(jsonData) {
+  return new Promise(function (ok_callback, err_callback) {
+    if (!jsonData || typeof jsonData !== 'object') {
+      // Handle invalid JSON data
+      err_callback('Invalid JSON data');
+      return;
+    }
+
+    var region_import_count = 0;
+    var file_added_count = 0;
+    var malformed_entries_count = 0;
+
+    for (var img_id in jsonData) {
+      if (!_via_img_metadata.hasOwnProperty(img_id)) {
+        project_add_new_file(jsonData[img_id].filename, jsonData[img_id].size, img_id);
+        if (_via_settings.core.default_filepath === '') {
+          _via_img_src[img_id] = jsonData[img_id].filename;
+        } else {
+          _via_file_resolve_file_to_default_filepath(img_id);
+        }
+        file_added_count += 1;
+      }
+
+      // copy file attributes
+      for (var key in jsonData[img_id].file_attributes) {
+        if (key === '') {
+          continue;
+        }
+
+        _via_img_metadata[img_id].file_attributes[key] = jsonData[img_id].file_attributes[key];
+
+        // add this file attribute to _via_attributes
+        if (!_via_attributes['file'].hasOwnProperty(key)) {
+          _via_attributes['file'][key] = { 'type': 'text' };
+        }
+      }
+
+      // copy regions
+      var regions = jsonData[img_id].regions;
+      for (var i in regions) {
+        var region_i = new file_region();
+        for (var sid in regions[i].shape_attributes) {
+          region_i.shape_attributes[sid] = regions[i].shape_attributes[sid];
+        }
+        for (var rid in regions[i].region_attributes) {
+          if (rid === '') {
+            continue;
+          }
+
+          region_i.region_attributes[rid] = regions[i].region_attributes[rid];
+
+          // add this region attribute to _via_attributes
+          if (!_via_attributes['region'].hasOwnProperty(rid)) {
+            _via_attributes['region'][rid] = { 'type': 'text' };
+          }
+        }
+
+        // add regions only if they are present
+        if (Object.keys(region_i.shape_attributes).length > 0 ||
+          Object.keys(region_i.region_attributes).length > 0) {
+          _via_img_metadata[img_id].regions.push(region_i);
+          region_import_count += 1;
+        }
+      }
+    }
+
+    show_message('Import Summary : [' + file_added_count + '] new files, ' +
+      '[' + region_import_count + '] regions, ' +
+      '[' + malformed_entries_count + '] malformed entries.');
+
+    if (file_added_count) {
+      update_img_fn_list();
+    }
+
+    if (_via_current_image_loaded) {
+      if (region_import_count) {
+        update_attributes_update_panel();
+        annotation_editor_update_content();
+        _via_load_canvas_regions(); // image to canvas space transform
+        _via_redraw_reg_canvas();
+        _via_reg_canvas.focus();
+      }
+    } else {
+      if (file_added_count) {
+        _via_show_img(0);
+      }
+    }
+
+    ok_callback([file_added_count, region_import_count, malformed_entries_count]);
+  });
+}
+
+// Example usage with a JSON object
+var json = {
+    {% for image_name, image_info in data['images'].items() %}
+      "{{ url_for('get_image', filename=image_info['filename']) }}": {
+        "filename": "{{ url_for('get_image', filename=image_info['filename']) }}",
+        "size": {{ image_info['size'] }},
+        "regions": [
+          {% for region in image_info['regions'] %}
+            {
+              "shape_attributes": {
+                "name": "{{ region['shape_attributes']['name'] }}",
+                "x": {{ region['shape_attributes']['x'] }},
+                "y": {{ region['shape_attributes']['y'] }},
+                "width": {{ region['shape_attributes']['width'] }},
+                "height": {{ region['shape_attributes']['height'] }}
+              },
+              "region_attributes": {{ region['region_attributes'] | tojson }}
+            },
+          {% endfor %}
+        ],
+        "file_attributes": {{ image_info['file_attributes'] | tojson }}
+      },
+    {% endfor %}
+  };
+
+
+import_json(json)
+
+  .then(function (result) {
+    console.log('Import successful:', result);
+  })
+  .catch(function (error) {
+    console.error('Import failed:', error);
+  });
+
+  window.addEventListener('load', function() {
+    jump_to_image(0);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function upload_all_region_data(type, file_extension) {
+  if (typeof file_extension === 'undefined') {
+    file_extension = type;
+  }
+
+  // Utilise la fonction pack_via_metadata pour obtenir les données
+  pack_via_metadata(type)
+    .then(function (data) {
+      // Construit l'objet Blob
+      var blob_attr = { type: 'text/' + file_extension + ';charset=utf-8' };
+      var all_region_data_blob = new Blob(data, blob_attr);
+
+      // Construit le nom du fichier
+      var filename = 'via_export';
+      if (
+        typeof _via_settings !== 'undefined' &&
+        _via_settings.hasOwnProperty('project') &&
+        _via_settings['project']['name'] !== ''
+      ) {
+        filename = _via_settings['project']['name'];
+      }
+      if (file_extension !== 'csv' && file_extension !== 'json') {
+        filename += '_' + type + '.' + file_extension;
+      }
+
+      // Crée un objet FormData et ajoute le Blob
+      var formData = new FormData();
+      formData.set('file', all_region_data_blob, filename + '.' + file_extension);
+
+      // Ajoute de l'id de l'image 
+      formData.append('id', '{{id_image}}');
+
+      // Effectue une requête POST vers l'adresse /resultat
+      fetch('/resultat', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json(); // Peut être ajusté en fonction de la réponse attendue
+        })
+        .then(function (jsonResponse) {
+          // Faire quelque chose avec la réponse JSON
+          console.log(jsonResponse);
+        })
+        .catch(function (error) {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+    })
+    .catch(function (err) {
+      console.error('Failed to download data:', err);
+    });
+}
+
+
+
+
+
+
+
+
 </script>
 <!-- END: Contents of file: via.js-->
   </body>

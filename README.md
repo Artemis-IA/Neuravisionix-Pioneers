@@ -1,4 +1,4 @@
-![image](https://github.com/Artemis-IA/Neuravisionix-Pioneers/assets/132452182/4bae2453-267e-45cb-bb70-740ed0c35575)# Intradys
+# Intradys
 
 ## Introduction
 

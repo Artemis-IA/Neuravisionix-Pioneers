@@ -146,6 +146,16 @@ def check_authentication(func):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    response = requests.get(f'{SERVER_URL}/check_db_empty')
+    response = response.json()
+    print(response["message"])
+    if response["message"] == 'True':
+        data = {
+        'username': 'admin',
+        'password': 'admin',
+        }
+        response = requests.post(f'{SERVER_URL}/first_user', json=data)
+        return render_template('login.html')
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -160,11 +170,27 @@ def login():
     
 
 
+def check_db_empty():
+    response = requests.get(f'{SERVER_URL}/check_db_empty')
+    if response.status_code == 200:
+        is_db_empty = response.json().get('message', False)
+        return is_db_empty
+    else:
+        print(f"Failed to check if the database is empty. Status code: {response.status_code}")
+        return False  # Assume the database is not empty to prevent registration in case of an error
+
+# ... (existing code)
+
 @app.route('/register', methods=['GET', 'POST'])
 @check_authentication
 def register():
     if request.method == 'POST':
-        # Obtenez le jeton d'administration
+        # Check if the database is empty before allowing registration
+        if not check_db_empty():
+            flash("User registration is not allowed. Users already exist.", 'error')
+            return render_template('register.html')
+
+        # Rest of your registration code remains unchanged
         admin_token = session.get('token')
         if admin_token:
             # Créez un nouvel utilisateur avec les données minimales

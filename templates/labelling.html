@@ -428,7 +428,7 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
           <li>Project
             <ul>
               <li onclick="project_open_select_project_file()" title="Load a VIA project (from a JSON file)">Load</li>
-              <li onclick="project_save_with_confirm()" title="Save this VIA project (as a JSON file)">Save</li>
+              <li onclick="upload_all_region_data('json')" title="Save this VIA project (as a JSON file)">Save</li>
               <li onclick="settings_panel_toggle()" title="Show/edit project settings">Settings</li>
               <li class="submenu_divider"></li>
               <li onclick="sel_local_images()" title="Add images locally stored in this computer">Add local files</li>
@@ -491,7 +491,7 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
       <!-- Shortcut toolbar -->
       <div class="toolbar">
         <svg onclick="project_open_select_project_file()" viewbox="0 0 24 24"><use xlink:href="#icon_open"></use><title>Open Project</title></svg>
-        <svg onclick="project_save_with_confirm()" viewbox="0 0 24 24"><use xlink:href="#icon_save"></use><title>Save Project</title></svg>
+        <svg onclick="upload_all_region_data()" viewbox="0 0 24 24"><use xlink:href="#icon_save"></use><title>Save Project</title></svg>
         <svg onclick="settings_panel_toggle()" viewbox="0 0 24 24"><use xlink:href="#icon_settings"></use><title>Update Project Settings</title></svg>
         <!--
         <svg onclick="" viewbox="0 0 24 24"><use xlink:href="#icon_checkbox"></use><title>Locate Files</title></svg>
@@ -1545,7 +1545,7 @@ function download_all_region_data(type, file_extension) {
   pack_via_metadata(type).then( function(data) {
     var blob_attr = {type: 'text/'+file_extension+';charset=utf-8'};
     var all_region_data_blob = new Blob(data, blob_attr);
-
+    
     var filename = 'via_export';
     if(typeof(_via_settings) !== 'undefined' &&
        _via_settings.hasOwnProperty('project') &&
@@ -11297,6 +11297,76 @@ import_json(json)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function upload_all_region_data(type, file_extension) {
+  if (typeof file_extension === 'undefined') {
+    file_extension = type;
+  }
+
+  // Utilise la fonction pack_via_metadata pour obtenir les données
+  pack_via_metadata(type)
+    .then(function (data) {
+      // Construit l'objet Blob
+      var blob_attr = { type: 'text/' + file_extension + ';charset=utf-8' };
+      var all_region_data_blob = new Blob(data, blob_attr);
+
+      // Construit le nom du fichier
+      var filename = 'via_export';
+      if (
+        typeof _via_settings !== 'undefined' &&
+        _via_settings.hasOwnProperty('project') &&
+        _via_settings['project']['name'] !== ''
+      ) {
+        filename = _via_settings['project']['name'];
+      }
+      if (file_extension !== 'csv' && file_extension !== 'json') {
+        filename += '_' + type + '.' + file_extension;
+      }
+
+      // Crée un objet FormData et ajoute le Blob
+      var formData = new FormData();
+      formData.set('file', all_region_data_blob, filename + '.' + file_extension);
+
+      // Ajoute de l'id de l'image 
+      formData.append('id', '{{id_image}}');
+
+      // Effectue une requête POST vers l'adresse /resultat
+      fetch('/resultat', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json(); // Peut être ajusté en fonction de la réponse attendue
+        })
+        .then(function (jsonResponse) {
+          // Faire quelque chose avec la réponse JSON
+          console.log(jsonResponse);
+        })
+        .catch(function (error) {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+    })
+    .catch(function (err) {
+      console.error('Failed to download data:', err);
+    });
+}
 
 
 

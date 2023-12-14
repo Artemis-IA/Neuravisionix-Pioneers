@@ -211,7 +211,7 @@ def labelling():
     with open(f"./image/{filename}", 'wb') as f:
         f.write(response_image.content)
     image=filename
-    return render_template('labelling.html',image=image ,filename=filename ,data=data)
+    return render_template('labelling.html',image=image ,filename=filename ,data=data,id_image=id_image)
 
 @app.route('/get_image/<filename>')
 def get_image(filename):
@@ -260,6 +260,24 @@ def predict_route():
         return annotations_json
     else:
         return "No files uploaded."
+
+@app.route('/resultat', methods=['POST'])
+def resultat():
+    print("resultat")
+
+    # Récupérer le fichier du formulaire multipart
+    uploaded_file = request.files['file']
+    file_content = uploaded_file.read().decode('utf-8')
+    id_value = request.form['id']
+    # response = requests.post(f'{SERVER_URL}/post_resultat/{id_value}')
+    file_content=json.loads(file_content)
+    # print(list(file_content.keys())[0])
+    data = {'id':id_value ,'regions': file_content[list(file_content.keys())[0]]["regions"]}
+    print('uplod',data)
+    response = requests.post(f'{SERVER_URL}/post_resultat', json=data)
+    response_json = response.json()
+    return jsonify({'status': 'success', 'message': 'File uploaded successfully'})
+
 
 
 @app.route('/logs')

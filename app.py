@@ -4,11 +4,11 @@ from PIL import Image
 from functools import wraps
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for, send_file, jsonify
 import requests
-
+import os
 app = Flask(__name__)
 app.secret_key = '0ec5205f107e18f72f9fd8d363c04c98'
-SERVER_URL = "http://equipe2.lumys.tech:5005"
-# SERVER_URL = "https://api.morgan-coulm.fr"
+# SERVER_URL = "http://equipe2.lumys.tech:5005"
+SERVER_URL = os.environ.get("SERVER_URL")
 
 
 def get_token(username, password):
@@ -27,7 +27,7 @@ def get_current_user():
     if token:
         headers = {'Authorization': f'JWT {token}'}
         response = requests.post(
-            f'https://api.morgan-coulm.fr/user', headers=headers)
+            f'{SERVER_URL}/user', headers=headers)
         response.raise_for_status()
         user_data = response.json().get('user')
         current_username = user_data.get('user_name')
@@ -148,11 +148,6 @@ def register():
     return render_template('register.html')
 
 
-# @app.context_processor
-# def inject_user_info():
-#     current_role, current_username = get_current_user()
-#     return dict(current_role=current_role, current_username=current_username)
-
 
 @app.route('/dashboard')
 @check_authentication
@@ -189,7 +184,7 @@ def labelling():
         filepath = {"filepath": filepath}
         filename_2 = data_image['result']['name']
         if 'label'=='False':
-            response_annotation = requests.post(f'http://equipe2.lumys.tech:5005/load_images', json=filepath , headers=headers)
+            response_annotation = requests.post(f'{SERVER_URL}/load_images', json=filepath , headers=headers)
             data = response_annotation.json()
         else:
             data = data_image['result']['regions']

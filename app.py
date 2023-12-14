@@ -194,7 +194,9 @@ def dashboard():
 
 @app.route('/labelling')
 def labelling():
-    id_image=  '65772409edfb11a6c6d8fac9' #image en dur 
+    
+
+    id_image=  '65772409edfb11a6c6d8facc' #image en dur 
     info_image= requests.get(f'{SERVER_URL}/affiche_image/{id_image}')
     data_image = info_image.json()
     filepath = data_image['result']['path']
@@ -211,7 +213,7 @@ def labelling():
     with open(f"./image/{filename}", 'wb') as f:
         f.write(response_image.content)
     image=filename
-    return render_template('labelling.html',image=image ,filename=filename ,data=data,id_image=id_image)
+    return render_template('labelling.html',image=image ,filename=filename ,data=data,id_image=id_image )
 
 @app.route('/get_image/<filename>')
 def get_image(filename):
@@ -263,8 +265,6 @@ def predict_route():
 
 @app.route('/resultat', methods=['POST'])
 def resultat():
-    print("resultat")
-
     # Récupérer le fichier du formulaire multipart
     uploaded_file = request.files['file']
     file_content = uploaded_file.read().decode('utf-8')

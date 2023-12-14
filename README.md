@@ -1,4 +1,4 @@
-# Intradys
+![image](https://github.com/Artemis-IA/Neuravisionix-Pioneers/assets/132452182/4bae2453-267e-45cb-bb70-740ed0c35575)# Intradys
 
 ## Introduction
 
@@ -15,10 +15,14 @@ The first user will be created whenever someone reaches the logging page. It wil
 This account can then create another admin with a different username and password and then safely delete the first admin account.
 
 When successfully logging in, the users will be directed to the home page.
+![Neuravisionix Homepage](https://github.com/Artemis-IA/Neuravisionix-Pioneers/blob/fred/docs/homepage.png)
+
 
 ### Labelling
 
 The labelling button will direct you to the labelling app, an open-source project known as VGG Image Annotator (VIA). The documentation for VIA can be found in the 'Help' tab under 'Getting Started' and on the official VIA website. To save an image with its annotation(s), click the “save project” button (middle of the sidebar).
+![Neuravisionix VIA](https://github.com/Artemis-IA/Neuravisionix-Pioneers/blob/fred/docs/via.jpg)
+
 
 ### Overview
 

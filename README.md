@@ -1,54 +1,39 @@
-# Neuravisionix Pioneers - Outil de Gestion d'Annotations et de Modèles d'IA
-A self-made machine-learning Web-UI for medical use
+# Intradys
 
-![Neuravisionix Logo](https://github.com/Artemis-IA/Neuravisionix-Pioneers/raw/main/Neuravisionix_logo.png)
+## Introduction
 
-## Description du Projet
+Intradys is a web application designed for manual image annotation, as well as automatic image annotation through AI. It enables users to verify and modify the annotations predicted by the AI as needed. You will need to be logged in to be able to use the Intradys app.
 
-Ce projet vise à développer un outil complet de gestion d'annotations et de modèles d'intelligence artificielle pour le cycle d'annotation et d'entraînement. L'outil permettra aux utilisateurs de créer, éditer, et supprimer des annotations sur des images 2D, de charger des modèles d'IA pré-entraînés, de visualiser et corriger les annotations générées par le modèle, et d'exporter les annotations au format JSON.
+## Usage
 
-## Fonctionnalités Principales
+### First User
 
-1. **Gestion des Annotations :**
-   - Création, édition, et suppression d'annotations sur des images 2D.
-   - Visualisation des annotations avec identifiant de l'annotateur.
+The first user will be created whenever someone reaches the logging page. It will create the admin account with the following credentials:
+- Username: admin
+- Password: admin
 
-2. **Chargement de Modèles d'IA :**
-   - Chargement de modèles d'intelligence artificielle pré-entraînés.
+This account can then create another admin with a different username and password and then safely delete the first admin account.
 
-3. **Visualisation des Annotations du Modèle :**
-   - Visualisation, édition, et suppression des annotations générées par le modèle d'IA.
+When successfully logging in, the users will be directed to the home page.
 
-4. **Exportation au Format JSON :**
-   - Exportation des annotations au format JSON.
+### Labelling
 
-## Fonctionnalités Additionnelles
+The labelling button will direct you to the labelling app, an open-source project known as VGG Image Annotator (VIA). The documentation for VIA can be found in the 'Help' tab under 'Getting Started' and on the official VIA website. To save an image with its annotation(s), click the “save project” button (middle of the sidebar).
 
-5. **Prise en Charge des Images 3D et Vidéos :**
-   - Importation et annotation d'images 3D.
-   - Annotation de vidéos.
+### Overview
 
-6. **Mise à Jour du Modèle avec de Nouvelles Annotations :**
-   - Ajout de nouvelles annotations pour mettre à jour le modèle d'IA.
+Allow users to view annotation logs: If a user saves a new annotation, it will be recorded here, along with the image name and a boolean indicating whether the image has annotations or not. Clicking on the image will redirect the user to VIA, where they can annotate the image.
 
-## Fonctionnalités Avancées
+### Help
 
-7. **Prise en Charge des Images Médicales DICOM :**
-   - Importation, annotation, et visualisation d'images médicales 2D, 3D ou séries 2D au format DICOM.
+Redirect users to a form to write their issue(s).
 
-8. **Visualisation Avancée d'Images Médicales :**
-   - Visualisation en coupe ou en volume et modification du fenêtrage d'images médicales.
+### Settings
 
-## Guide d'Installation
+Allow users to change some settings on the app.
 
-1. Cloner le dépôt :
-   ```bash
-   git clone https://github.com/Artemis-IA/Neuravisionix-Pioneers.git
+### Administrator Privileges
 
-   cd Neuravisionix-Pioneers
-   ```
-2. Installer les dépendances :
-   ```bash
+Administrators can access: {URL}/admin/user_management. Here, they will find a list of all users and have the ability to change a user's role to admin, and an admin's role to user. They can also delete any user.
 
-   pip install -r requirements.txt
-   ```
+**Note:** ADMIN SHOULD NOT BE REMOVED AS ONLY THEM CAN CREATE A USER (Or if the database is empty,

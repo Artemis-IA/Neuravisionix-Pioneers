@@ -1,5 +1,5 @@
 import json
-from flask import session
+from flask import flash, session
 from PIL import Image
 from functools import wraps
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for, send_file, jsonify
@@ -66,26 +66,84 @@ def check_authentication(func):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    response = requests.get(f'{SERVER_URL}/check_db_empty')
+    response = response.json()
+    print(response["message"])
+    if response["message"] == 'True':
+        data = {
+            'username': 'admin',
+            'password': 'admin',
+        }
+        response = requests.post(f'{SERVER_URL}/first_user', json=data)
+        return render_template('login.html')
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         token = get_token(username, password)
         if token:
             session['token'] = token  # Store the token in the session
-            headers = {'Authorization': f'JWT {token}'}
-            response = requests.get(f'{SERVER_URL}/protected', headers=headers)
-            if response.status_code == 200:
-                # Do not print the result here
-                pass
-                return redirect(url_for('dashboard'))
-        print("Authentication failed")
+            return redirect(url_for('dashboard'))
+        flash("Authentication failed", "error")
         return render_template('login.html')
     else:
         return render_template('login.html')
 
 
-@app.route('/register')
+def check_db_empty():
+    response = requests.get(f'{SERVER_URL}/check_db_empty')
+    if response.status_code == 200:
+        is_db_empty = response.json().get('message', False)
+        return is_db_empty
+    else:
+        print(
+            f"Failed to check if the database is empty. Status code: {response.status_code}")
+        return False  # Assume the database is not empty to prevent registration in case of an error
+
+
+@app.route('/register', methods=['GET', 'POST'])
+@check_authentication
 def register():
+    if request.method == 'POST':
+        # Check if the database is empty before allowing registration
+        if not check_db_empty():
+            flash("User registration is not allowed. Users already exist.", 'error')
+            return render_template('register.html')
+
+        # Rest of your registration code remains unchanged
+        admin_token = session.get('token')
+        if admin_token:
+            # Créez un nouvel utilisateur avec les données minimales
+            username = request.form['username']
+            password = request.form['password']
+            role = 'utilisateur'
+
+            headers = {'Authorization': f'JWT {admin_token}'}
+            data = {
+                'username': username,
+                'password': password,
+                'role': role
+            }
+
+            try:
+                response = requests.post(
+                    f'{SERVER_URL}/create_user', headers=headers, json=data)
+                response.raise_for_status()
+
+                if response.status_code == 201:
+                    flash('User created successfully', 'success')
+                    return redirect(url_for('dashboard'))
+                else:
+                    error_message = response.json().get('message')
+                    flash(
+                        f"User creation failed. Status code: {response.status_code}, Message: {error_message}", 'error')
+
+            except requests.exceptions.RequestException as e:
+                flash(f"Error during user creation: {e}", 'error')
+
+        else:
+            flash("Admin authentication failed", 'error')
+            return render_template('login.html')
+
     return render_template('register.html')
 
 
@@ -115,14 +173,13 @@ def dashboard():
         return jsonify({'message': 'Authentication failed'}), 401
 
 
-@app.route('/labelling')
+@app.route('/labelling', methods=['GET'])
 @check_authentication
 def labelling():
-    id_image = '65772409edfb11a6c6d8fac9'  # image en dur
+    id_image = request.args.get('id_image', None)
     info_image = requests.get(f'{SERVER_URL}/affiche_image/{id_image}')
     data_image = info_image.json()
     filepath = data_image['result']['path']
-    print('prems : ', filepath)
     filepath = {"filepath": filepath}
     response_annotation = requests.post(
         f'http://equipe2.lumys.tech:5005/load_images', json=filepath)
@@ -176,18 +233,10 @@ def get_image(filename):
 @app.route('/overview')
 @check_authentication
 def overview():
-    return render_template('overview.html')
-
-
-@app.route('/test')
-def test():
-    return render_template('test.html')
-
-
-@app.route('/docs')
-@check_authentication
-def docs():
-    return render_template('docs.html')
+    response = requests.get(f'{SERVER_URL}/find_all_image')
+    response.raise_for_status()  # Gère les erreurs HTTP
+    images = response.json()  # Convertit la réponse JSON en Python dict
+    return render_template('overview.html', images=images)
 
 
 @app.route('/help')

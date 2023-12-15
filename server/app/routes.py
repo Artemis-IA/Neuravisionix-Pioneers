@@ -122,14 +122,16 @@ def create_user(current_user_id):
 
 # suprime un user avec son user_id (only admin)
 # /delete_user/1 pour l'user_id 1
-@app.route('/delete_user/<int:user_id>', methods=['POST'])
+@app.route('/delete_user', methods=['POST'])
 @jwt_required
-def delete_user(current_user_id, user_id):
+def delete_user(current_user_id):
     print('delete_user')
     current_user = User.query.get(current_user_id)
     if current_user.as_dict()['role'] != "admin":
         return jsonify({'message': 'Unauthorized access'}), 401
 
+    data = request.get_json() 
+    user_id = data['id'] 
     # Check if the user to be deleted exists
     user_to_delete = User.query.get(user_id)
     if not user_to_delete:
@@ -148,14 +150,17 @@ def delete_user(current_user_id, user_id):
 # data = {
 #     'role': 'admin'
 # }
-@app.route('/change_role/<int:user_id>', methods=['POST'])
+@app.route('/change_role', methods=['POST'])
 @jwt_required
-def change_user_role(current_user_id, user_id):
+def change_user_role(current_user_id):
     print('change_role')
     current_user = User.query.get(current_user_id)
     if current_user.as_dict()['role'] != "admin":
         print("pas autoriser")
         return jsonify({'message': 'Unauthorized access'}), 401
+    
+    data = request.get_json() 
+    user_id = data['id']
     
     # Check if the use r to be modified exists
     user_to_modify = User.query.get(user_id)
@@ -229,10 +234,13 @@ def user(current_user_id):
     print('user_name',user.as_dict())  
     return jsonify(user.as_dict()), 201
 
-@app.route('/user/<int:user_id>')
+@app.route('/user', methods=['POST'])
 @jwt_required
-def user_id(user_id):
+def user_id(current_user_id):
     print('user')
+    
+    data = request.get_json() 
+    user_id = data['id']
     user = User.query.get(user_id) 
     user_data = {
             'id': user.id,

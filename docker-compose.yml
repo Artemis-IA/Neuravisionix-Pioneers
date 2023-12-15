@@ -7,7 +7,7 @@ services:
         dockerfile: Dockerfile
       container_name: flask-client
       ports: 
-        - 5002:5001
+        - 80:5001
       entrypoint:
         - flask
         - run
@@ -16,6 +16,6 @@ services:
       environment: 
         - FLASK_DEBUG=1
         - FLASK_APP=./app.py
-        - SERVER_URL=http://equipe2.lumys.tech:5005
+        - SERVER_URL=https://api.morgan-coulm.fr
       volumes:
         ['./:/app']

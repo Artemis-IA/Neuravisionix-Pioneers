@@ -27,7 +27,7 @@ def get_current_user():
     if token:
         headers = {'Authorization': f'JWT {token}'}
         response = requests.post(
-            f'{SERVER_URL}/user', headers=headers)
+            f'{SERVER_URL}/user_name', headers=headers)
         response.raise_for_status()
         user_data = response.json().get('user')
         current_username = user_data.get('user_name')
@@ -176,27 +176,30 @@ def labelling():
     if token:
         headers = {'Authorization': f'JWT {token}'}
         id_image = request.args.get('id_image', None)
-        info_image = requests.get(f'{SERVER_URL}/affiche_image/{id_image}', headers=headers)
+        print('is image',id_image)
+        info_image = requests.post(f'{SERVER_URL}/affiche_image',json=id_image , headers=headers)
         
         data_image = info_image.json()
         filepath = data_image['result']['path']
-        print('ici',filepath)
+        
+        print('ici',data_image['result']['labels']) 
         filepath = {"filepath": filepath}
         filename_2 = data_image['result']['name']
-        if 'label'=='False':
+        if data_image['result']['labels']==False:
             response_annotation = requests.post(f'{SERVER_URL}/load_images', json=filepath , headers=headers)
-            data = response_annotation.json()
+            data = response_annotation.json() 
+            print(data)
         else:
             data = data_image['result']['regions']
             data = {'images' :{
-                    'Fsx8nFRWwAAfhAk.jpg42889': {
-                    'file_attributes': {},
+                    f"{filename_2}{data_image['result']['size']}": {
+                    'file_attributes': {}, 
                     'filename': data_image['result']['name'],
                     'regions': data ,
                     'size': data_image['result']['size']
 
                     }
-                }}
+                }} 
         
         print(data)
         print(data)
@@ -262,7 +265,7 @@ def get_image(filename):
 
 
 @app.route('/overview')
-#@check_authentication
+@check_authentication
 def overview():
     token = session.get('token')
     if token:

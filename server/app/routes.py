@@ -36,7 +36,7 @@ def auth():
         return jsonify({'message': 'Invalid username or password'}), 401
 
 
-@app.route('/image_from_server/',methods=['POST'])
+@app.route('/image_from_server',methods=['POST'])
 @jwt_required
 def main_image_from_server(current_user_id):
     print('image_from_server')
@@ -50,7 +50,7 @@ def main_image_from_server(current_user_id):
 @app.route('/check_db_empty')
 def check_db_empty():
     print('check_db_empty')
-    user_count = User.query.count()
+    user_count = User.query.count() 
     if user_count == 0:
         return jsonify({'message': 'True'})
     else:
@@ -242,10 +242,12 @@ def user_id(user_id):
     return jsonify({ 'user': user_data}), 201
 
 
-@app.route('/affiche_image/<string:image_id>',methods=['GET','POST']) 
+@app.route('/affiche_image',methods=['POST'])
 @jwt_required
-def affiche_image(image_id,current_user_id):
+def affiche_image(current_user_id):
     print('affiche_image')
+    image_id = request.get_json()
+    print(image_id)
     image_id = ObjectId(image_id)
     # Récupérer l'élément de la base de données par son _id
     resultat = mongo.db.images.find_one({'_id': image_id}) 

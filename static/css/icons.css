@@ -1,21 +1,3 @@
-.gg-bookmark,
-.gg-bookmark::after {
-  display: block;
-  box-sizing: border-box;
-  border-top-right-radius: 3px;
-}
-
-.gg-bookmark {
-  border: 2px solid;
-  border-bottom: 0;
-  border-top-left-radius: 3px;
-  overflow: hidden;
-  position: relative;
-  transform: scale(var(--ggs, 1));
-  width: 14px;
-  height: 16px;
-}
-
 .gg-bookmark::after {
   content: "";
   position: absolute;
@@ -99,33 +81,7 @@
   top: 2px;
   left: 7px;
 }
-.gg-folder {
-  transform: scale(var(--ggs, 1));
-}
 
-.gg-folder,
-.gg-folder::after {
-  box-sizing: border-box;
-  position: relative;
-  display: block;
-  width: 22px;
-  height: 16px;
-  border: 2px solid;
-  border-radius: 3px;
-}
-
-.gg-folder::after {
-  content: "";
-  position: absolute;
-  width: 10px;
-  height: 4px;
-  border-bottom: 0;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  top: -5px;
-}
 .gg-home {
   background: linear-gradient(to left, currentColor 5px, transparent 0)
       no-repeat 0 bottom/4px 2px,
@@ -218,34 +174,33 @@
   left: 5px;
   bottom: 5px;
 }
-.gg-options {
-  box-sizing: border-box;
-  position: relative;
+.gg-user {
   display: block;
   transform: scale(var(--ggs, 1));
-  width: 10px;
-  height: 2px;
-  box-shadow: -3px 4px 0 0, 3px -4px 0 0;
+  box-sizing: border-box;
+  width: 12px;
+  height: 18px;
 }
-
-.gg-options::after,
-.gg-options::before {
+.gg-user::after,
+.gg-user::before {
   content: "";
   display: block;
   box-sizing: border-box;
   position: absolute;
+  border: 2px solid;
+}
+.gg-user::before {
   width: 8px;
   height: 8px;
-  border: 2px solid;
-  border-radius: 100%;
+  border-radius: 30px;
+  top: 0;
+  left: 2px;
 }
-
-.gg-options::before {
-  top: -7px;
-  left: -4px;
-}
-
-.gg-options::after {
-  bottom: -7px;
-  right: -4px;
+.gg-user::after {
+  width: 12px;
+  height: 9px;
+  border-bottom: 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  top: 9px;
 }

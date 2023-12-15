@@ -15,22 +15,25 @@
       <thead>
         <tr>
           <th>User</th>
-          <th>Image ID</th>
           <th>Image Name</th>
-          <th>Labelling</th>
+          <th>Human Reviewed</th>
         </tr>
       </thead>
       <tbody>
         {% for image in images['result'] %}
         <tr>
-          <td>on attend user 🤓</td>
+          <td>{{image['username']}}</td>
           <td>
             <a href="{{ url_for('labelling', id_image=image['_id']) }}"
-              >{{ image['_id'] }}</a
+              >{{ image['name'] }}</a
             >
           </td>
-          <td>{{ image['name'] }}</td>
-          <td>{{ image['labels'] }}</td>
+          {%if image['labels'] == True %}
+          <td style="color: #43eb43">Yes</td>
+
+          {% endif %} {%if image['labels'] == False %}
+          <td style="color: red">No</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>

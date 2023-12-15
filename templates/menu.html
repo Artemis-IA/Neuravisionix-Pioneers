@@ -37,8 +37,8 @@
             />
             <h5>Intradys</h5>
             <div class="user_info">
-              <p class="">{{current_username}}</p>
-              <p class="">{{current_role}}</p>
+              <p class="">{{username}}</p>
+              <p class="">{{role}}</p>
             </div>
           </div>
         </div>
@@ -52,14 +52,6 @@
                     <i class="gg-home"></i>
                   </span>
                   <span class="menu-title">Home</span>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="{{ url_for('labelling') }}">
-                  <span class="menu-icon">
-                    <i class="gg-bookmark"></i>
-                  </span>
-                  <span class="menu-title">Labeling</span>
                 </a>
               </li>
               <li class="menu-item">
@@ -82,6 +74,16 @@
                   <span class="menu-title">Help</span>
                 </a>
               </li>
+              {% if role == 'admin' %}
+              <li class="menu-item">
+                <a href="{{ url_for('user_management') }}">
+                  <span class="menu-icon">
+                    <i class="gg-user"></i>
+                  </span>
+                  <span class="menu-title">Users</span>
+                </a>
+              </li>
+              {%endif%}
               <li class="menu-item">
                 <a href="{{ url_for('logout') }}">
                   <span class="menu-icon">

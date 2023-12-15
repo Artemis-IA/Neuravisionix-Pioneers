@@ -82,7 +82,23 @@
           </td>
         </tr>
         {% endfor %}
-        
+        <tr><form
+        id="registerForm"
+        action="{{ url_for('register') }}"
+        method="post"
+      ><td>
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+      </td>
+    <td>
+        <select name="role">
+          <option>utilisateur</option>
+          <option>admin</option>
+        </select>
+      </td>
+    <td>
+        <button type="submit">Register</button>
+      </td></form></tr>
       </tbody>
     </table>
     <!-- Liens de pagination -->
@@ -97,6 +113,7 @@
       />
     </div>
   </div>
+
 
   {% endblock %}
 </div>

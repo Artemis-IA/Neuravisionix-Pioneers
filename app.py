@@ -1,7 +1,7 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-from flask_mail import Mail, Message
+#from flask_mail import Mail, Message
 import json
 from flask import flash, session
 from PIL import Image
@@ -12,8 +12,8 @@ import os
 app = Flask(__name__)
 app.secret_key = '0ec5205f107e18f72f9fd8d363c04c98'
 # SERVER_URL = "http://equipe2.lumys.tech:5005"
-SERVER_URL = "https://api.morgan-coulm.fr"
-# SERVER_URL = os.environ.get("SERVER_URL")
+#SERVER_URL = "https://api.morgan-coulm.fr"
+SERVER_URL = os.environ.get("SERVER_URL")
 
 
 def get_token(username, password):
@@ -290,7 +290,7 @@ def send_help_email(problem_type, comment, importance):
 # @check_authentication
 # def help():
 #     return render_template('help.html')
-
+ 
 
 @app.route('/admin/user_management')
 @check_authentication
@@ -307,6 +307,7 @@ def user_management():
             response = requests.post(f'{SERVER_URL}/all_user', headers=headers)
             response.raise_for_status()  # Gère les erreurs HTTP
             users = response.json()  # Convertit la réponse JSON en Python dict
+            print('users=',users)
             return render_template('user_management.html', users=users, username=username, role=role)
         except requests.exceptions.RequestException as e:
             print(f"Error fetching users: {e}")
@@ -365,10 +366,10 @@ def delete_user(user_id):
     if token:
         try:
             headers = {'Authorization': f'JWT {token}'}
-            response = requests.post(
-                f'{SERVER_URL}/delete_user/{user_id}', headers=headers)
+            data = {'id':user_id}
+            response = requests.post(f'{SERVER_URL}/delete_user',json=data , headers=headers)
             response.raise_for_status()
-            return render_template('user_management.html'), 200
+            return render_template('dashboard.html'), 200
         except requests.exceptions.RequestException as e:
             print(f"Error deleting user: {e}")
             return jsonify({'message': f'Erreur lors de la suppression de l\'utilisateur'}), 500
@@ -383,17 +384,16 @@ def switch_role(user_id):
     if token:
         try:
             headers = {'Authorization': f'JWT {token}'}
-            response = requests.get(
-                f'{SERVER_URL}/user/{user_id}', headers=headers)
+            data = {'id':user_id}
+            response = requests.post(f'{SERVER_URL}/user',json=data , headers=headers)
             response.raise_for_status()
             user_data = response.json().get('user')
             current_role = user_data.get('role')
             new_role = 'admin' if current_role == 'utilisateur' else 'utilisateur'
-            data = {'role': new_role}
-            response = requests.post(
-                f'{SERVER_URL}/change_role/{user_id}', json=data, headers=headers)
+            data = {'id':user_id,'role': new_role}
+            response = requests.post(f'{SERVER_URL}/change_role', json=data, headers=headers)
             response.raise_for_status()
-            return render_template('user_management.html'), 200
+            return render_template('dashboard.html'), 200
         except requests.exceptions.RequestException as e:
             print(f"Error switching role: {e}")
             print(f"Response content: {response.content}")
